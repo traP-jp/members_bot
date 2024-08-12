@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/traP-jp/members_bot/model"
 	repomock "github.com/traP-jp/members_bot/repository/mock"
 	"github.com/traP-jp/members_bot/service/mock"
@@ -126,8 +125,12 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				},
 			}
 
-			bh, err := NewBotHandler(traqMock, repositoryMock, "botChannelID")
-			require.NoError(t, err)
+			bh := &BotHandler{
+				traqClient: traqMock,
+				ir:         repositoryMock,
+				botUserID:  botUserID,
+				Config:     &Config{botChannelID: "botChannelID"},
+			}
 
 			payload := &payload.MessageCreated{
 				Message: payload.Message{

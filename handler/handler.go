@@ -9,23 +9,28 @@ import (
 )
 
 type BotHandler struct {
-	traqClient   service.Traq
-	ir           repository.Invitation
-	botUserID    string
-	botChannelID string
+	traqClient service.Traq
+	ir         repository.Invitation
+	botUserID  string
+	*Config
 }
 
-func NewBotHandler(traqClient service.Traq, ir repository.Invitation, botChannelID string) (*BotHandler, error) {
+func NewBotHandler(traqClient service.Traq, ir repository.Invitation) (*BotHandler, error) {
 	ctx := context.Background()
 	botUserID, err := traqClient.GetBotUserID(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get bot user: %w", err)
 	}
 
+	conf, err := loadConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to load config: %w", err)
+	}
+
 	return &BotHandler{
-		traqClient:   traqClient,
-		ir:           ir,
-		botChannelID: botChannelID,
-		botUserID:    botUserID,
+		traqClient: traqClient,
+		ir:         ir,
+		botUserID:  botUserID,
+		Config:     conf,
 	}, nil
 }
