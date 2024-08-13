@@ -19,6 +19,7 @@ func TestInvite(t *testing.T) {
 
 	botUserID := uuid.New().String()
 	messageID := uuid.New().String()
+	botPostMessageID := uuid.New().String()
 
 	type test struct {
 		plainText        string
@@ -43,7 +44,7 @@ func TestInvite(t *testing.T) {
 https://q.trap.jp/messages/%s`, t.messageID)
 			},
 			postToBotChannel: true,
-			invitations:      []*model.Invitation{model.NewInvitation(messageID, "@ikura-hamu", "ikura-hamu")},
+			invitations:      []*model.Invitation{model.NewInvitation(botPostMessageID, "@ikura-hamu", "ikura-hamu")},
 		},
 		"「招待」でも問題なし": {
 			plainText: "@BOT_traP-jp /招待 @ikura-hamu ikura-hamu",
@@ -58,7 +59,7 @@ https://q.trap.jp/messages/%s`, t.messageID)
 https://q.trap.jp/messages/%s`, t.messageID)
 			},
 			postToBotChannel: true,
-			invitations:      []*model.Invitation{model.NewInvitation(messageID, "@ikura-hamu", "ikura-hamu")},
+			invitations:      []*model.Invitation{model.NewInvitation(botPostMessageID, "@ikura-hamu", "ikura-hamu")},
 		},
 		"複数人でも問題なし": {
 			plainText: "@BOT_traP-jp /invite @ikura-hamu ikura-hamu @H1rono_K H1rono",
@@ -76,8 +77,8 @@ https://q.trap.jp/messages/%s`, t.messageID)
 			},
 			postToBotChannel: true,
 			invitations: []*model.Invitation{
-				model.NewInvitation(messageID, "@ikura-hamu", "ikura-hamu"),
-				model.NewInvitation(messageID, "@H1rono_K", "H1rono"),
+				model.NewInvitation(botPostMessageID, "@ikura-hamu", "ikura-hamu"),
+				model.NewInvitation(botPostMessageID, "@H1rono_K", "H1rono"),
 			},
 		},
 		"引数が足りないのでエラー": {
@@ -115,8 +116,8 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				GetBotUserIDFunc: func(context.Context) (string, error) {
 					return botUserID, nil
 				},
-				PostMessageFunc: func(ctx context.Context, channelID string, text string) error {
-					return nil
+				PostMessageFunc: func(ctx context.Context, channelID string, text string) (string, error) {
+					return botPostMessageID, nil
 				},
 			}
 			repositoryMock := &repomock.InvitationMock{

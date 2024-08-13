@@ -10,4 +10,5 @@ import (
 
 type Invitation interface {
 	CreateInvitation(ctx context.Context, invitations []*model.Invitation) error
+	GetInvitations(ctx context.Context, invitationID string) ([]*model.Invitation, error)
 }
