@@ -9,13 +9,14 @@ import (
 )
 
 type BotHandler struct {
-	traqClient service.Traq
-	ir         repository.Invitation
-	botUserID  string
+	traqClient   service.Traq
+	githubClient service.GitHub
+	ir           repository.Invitation
+	botUserID    string
 	*Config
 }
 
-func NewBotHandler(traqClient service.Traq, ir repository.Invitation) (*BotHandler, error) {
+func NewBotHandler(traqClient service.Traq, gitHubClient service.GitHub, ir repository.Invitation) (*BotHandler, error) {
 	ctx := context.Background()
 	botUserID, err := traqClient.GetBotUserID(ctx)
 	if err != nil {
@@ -28,9 +29,10 @@ func NewBotHandler(traqClient service.Traq, ir repository.Invitation) (*BotHandl
 	}
 
 	return &BotHandler{
-		traqClient: traqClient,
-		ir:         ir,
-		botUserID:  botUserID,
-		Config:     conf,
+		traqClient:   traqClient,
+		githubClient: gitHubClient,
+		ir:           ir,
+		botUserID:    botUserID,
+		Config:       conf,
 	}, nil
 }

@@ -3,14 +3,17 @@ package handler
 import (
 	"errors"
 	"os"
-	"strings"
+	"strconv"
 )
 
 type Config struct {
-	botChannelID  string
-	acceptStampID string
-	rejectStampID string
-	adminIDs      []string
+	botChannelID         string
+	acceptStampID        string
+	acceptStampThreshold int
+	rejectStampID        string
+	rejectStampThreshold int
+	inactiveStampID      string
+	adminGroupID         string
 }
 
 func loadConfig() (*Config, error) {
@@ -24,20 +27,46 @@ func loadConfig() (*Config, error) {
 		return nil, errors.New("ACCEPT_STAMP_ID is not set")
 	}
 
+	acceptStampThresholdStr, ok := os.LookupEnv("ACCEPT_STAMP_THRESHOLD")
+	if !ok {
+		return nil, errors.New("ACCEPT_STAMP_THRESHOLD is not set")
+	}
+	acceptStampThreshold, err := strconv.Atoi(acceptStampThresholdStr)
+	if err != nil {
+		return nil, errors.New("ACCEPT_STAMP_THRESHOLD is not a number")
+	}
+
 	rejectStampID, ok := os.LookupEnv("REJECT_STAMP_ID")
 	if !ok {
 		return nil, errors.New("REJECT_STAMP_ID is not set")
 	}
 
-	adminIDs, ok := os.LookupEnv("ADMIN_IDS")
+	rejectStampThresholdStr, ok := os.LookupEnv("REJECT_STAMP_THRESHOLD")
+	if !ok {
+		return nil, errors.New("REJECT_STAMP_THRESHOLD is not set")
+	}
+	rejectStampThreshold, err := strconv.Atoi(rejectStampThresholdStr)
+	if err != nil {
+		return nil, errors.New("REJECT_STAMP_THRESHOLD is not a number")
+	}
+
+	inactiveStampID, ok := os.LookupEnv("INACTIVE_STAMP_ID")
+	if !ok {
+		return nil, errors.New("INACTIVE_STAMP_ID is not set")
+	}
+
+	adminGroupID, ok := os.LookupEnv("ADMIN_IDS")
 	if !ok {
 		return nil, errors.New("ADMIN_IDS is not set")
 	}
 
 	return &Config{
-		botChannelID:  channelID,
-		acceptStampID: acceptStampID,
-		rejectStampID: rejectStampID,
-		adminIDs:      strings.Split(adminIDs, ","),
+		botChannelID:         channelID,
+		acceptStampID:        acceptStampID,
+		acceptStampThreshold: acceptStampThreshold,
+		rejectStampID:        rejectStampID,
+		rejectStampThreshold: rejectStampThreshold,
+		inactiveStampID:      inactiveStampID,
+		adminGroupID:         adminGroupID,
 	}, nil
 }
