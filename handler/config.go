@@ -55,7 +55,7 @@ func loadConfig() (*Config, error) {
 		return nil, errors.New("INACTIVE_STAMP_ID is not set")
 	}
 
-	adminGroupID, ok := os.LookupEnv("ADMIN_IDS")
+	adminGroupID, ok := os.LookupEnv("ADMIN_GROUP_ID")
 	if !ok {
 		return nil, errors.New("ADMIN_IDS is not set")
 	}
