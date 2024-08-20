@@ -107,3 +107,31 @@ func TestGetInvitations(t *testing.T) {
 		})
 	}
 }
+
+func TestDeleteInvitations(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ctx := context.Background()
+
+		t.Cleanup(func() {
+			_, err := testDB.NewTruncateTable().Model(&schema.Invitation{}).Exec(ctx)
+			require.NoError(t, err)
+		})
+
+		ir := NewInvitation(testDB)
+
+		invitationID := uuid.NewString()
+		{
+			_, err := ir.db.NewInsert().Model(&schema.Invitation{ID: invitationID}).Exec(ctx)
+			require.NoError(t, err)
+		}
+
+		err := ir.DeleteInvitations(ctx, invitationID)
+		assert.NoError(t, err)
+
+		var invitations []schema.Invitation
+		err = ir.db.NewSelect().Model(&invitations).Scan(ctx)
+		require.NoError(t, err)
+
+		assert.Len(t, invitations, 0)
+	})
+}

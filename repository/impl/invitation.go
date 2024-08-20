@@ -54,3 +54,12 @@ func (i *Invitation) GetInvitations(ctx context.Context, id string) ([]*model.In
 
 	return invitations, nil
 }
+
+func (i *Invitation) DeleteInvitations(ctx context.Context, id string) error {
+	_, err := i.db.NewDelete().Model(&schema.Invitation{}).Where("id = ?", id).Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to delete invitations: %w", err)
+	}
+
+	return nil
+}
