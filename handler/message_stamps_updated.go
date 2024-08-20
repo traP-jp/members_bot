@@ -63,6 +63,10 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 	}
 
 	if reject {
+		err := h.ir.DeleteInvitations(ctx, p.MessageID)
+		if err != nil {
+			log.Printf("failed to delete invitations: %v", err)
+		}
 		return
 	}
 
@@ -86,5 +90,10 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 	_, err = h.traqClient.PostMessage(ctx, h.botChannelID, message)
 	if err != nil {
 		log.Printf("failed to post message: %v", err)
+	}
+
+	err = h.ir.DeleteInvitations(ctx, p.MessageID)
+	if err != nil {
+		log.Printf("failed to delete invitations: %v", err)
 	}
 }

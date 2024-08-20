@@ -22,14 +22,15 @@ func TestAcceptOrReject(t *testing.T) {
 	botUserID := uuid.NewString()
 
 	type testCase struct {
-		addStampThreshold      int
-		rejectStampThreshold   int
-		stamps                 []payload.MessageStamp
-		invitations            []*model.Invitation
-		executeAddStamp        bool
-		executePostMessage     bool
-		executeSendInvitations bool
-		postMessageText        string
+		addStampThreshold        int
+		rejectStampThreshold     int
+		stamps                   []payload.MessageStamp
+		invitations              []*model.Invitation
+		executeAddStamp          bool
+		executePostMessage       bool
+		executeSendInvitations   bool
+		postMessageText          string
+		executeDeleteInvitations bool
 	}
 	testCases := map[string]testCase{
 		"承認": {
@@ -38,11 +39,12 @@ func TestAcceptOrReject(t *testing.T) {
 			stamps: []payload.MessageStamp{
 				{StampID: acceptStampID, UserID: adminIDs[0], CreatedAt: time.Now()},
 			},
-			invitations:            []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
-			executeAddStamp:        true,
-			executePostMessage:     true,
-			executeSendInvitations: true,
-			postMessageText:        "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n",
+			invitations:              []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
+			executeAddStamp:          true,
+			executePostMessage:       true,
+			executeSendInvitations:   true,
+			postMessageText:          "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n",
+			executeDeleteInvitations: true,
 		},
 		"却下": {
 			addStampThreshold:    1,
@@ -50,8 +52,9 @@ func TestAcceptOrReject(t *testing.T) {
 			stamps: []payload.MessageStamp{
 				{StampID: rejectStampID, UserID: adminIDs[0], CreatedAt: time.Now()},
 			},
-			invitations:     []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
-			executeAddStamp: true,
+			invitations:              []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
+			executeAddStamp:          true,
+			executeDeleteInvitations: true,
 		},
 		"複数人からの承認": {
 			addStampThreshold:    2,
@@ -60,11 +63,12 @@ func TestAcceptOrReject(t *testing.T) {
 				{StampID: acceptStampID, UserID: adminIDs[0], CreatedAt: time.Now()},
 				{StampID: acceptStampID, UserID: adminIDs[1], CreatedAt: time.Now()},
 			},
-			invitations:            []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
-			executeAddStamp:        true,
-			executePostMessage:     true,
-			executeSendInvitations: true,
-			postMessageText:        "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n",
+			invitations:              []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
+			executeAddStamp:          true,
+			executePostMessage:       true,
+			executeSendInvitations:   true,
+			postMessageText:          "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n",
+			executeDeleteInvitations: true,
 		},
 		"複数人からの却下": {
 			addStampThreshold:    2,
@@ -73,8 +77,9 @@ func TestAcceptOrReject(t *testing.T) {
 				{StampID: rejectStampID, UserID: adminIDs[0], CreatedAt: time.Now()},
 				{StampID: rejectStampID, UserID: adminIDs[1], CreatedAt: time.Now()},
 			},
-			invitations:     []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
-			executeAddStamp: true,
+			invitations:              []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
+			executeAddStamp:          true,
+			executeDeleteInvitations: true,
 		},
 		"承認が先だった": {
 			addStampThreshold:    2,
@@ -85,11 +90,12 @@ func TestAcceptOrReject(t *testing.T) {
 				{StampID: acceptStampID, UserID: adminIDs[2], CreatedAt: time.Now().Add(-time.Minute)},
 				{StampID: rejectStampID, UserID: adminIDs[2], CreatedAt: time.Now()},
 			},
-			invitations:            []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
-			executeAddStamp:        true,
-			executePostMessage:     true,
-			executeSendInvitations: true,
-			postMessageText:        "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n",
+			invitations:              []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
+			executeAddStamp:          true,
+			executePostMessage:       true,
+			executeSendInvitations:   true,
+			postMessageText:          "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n",
+			executeDeleteInvitations: true,
 		},
 		"却下が先だった": {
 			addStampThreshold:    2,
@@ -100,8 +106,9 @@ func TestAcceptOrReject(t *testing.T) {
 				{StampID: acceptStampID, UserID: adminIDs[2], CreatedAt: time.Now()},
 				{StampID: rejectStampID, UserID: adminIDs[2], CreatedAt: time.Now().Add(-time.Minute)},
 			},
-			invitations:     []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
-			executeAddStamp: true,
+			invitations:              []*model.Invitation{model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu")},
+			executeAddStamp:          true,
+			executeDeleteInvitations: true,
 		},
 		":kan:があるので何もしない": {
 			addStampThreshold:    1,
@@ -130,10 +137,11 @@ func TestAcceptOrReject(t *testing.T) {
 				model.NewInvitation(uuid.NewString(), "ikura-hamu", "ikura-hamu"),
 				model.NewInvitation(uuid.NewString(), "H1rono_K", "H1rono"),
 			},
-			executeAddStamp:        true,
-			executePostMessage:     true,
-			executeSendInvitations: true,
-			postMessageText:        "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n@H1rono_K (H1rono)\n",
+			executeAddStamp:          true,
+			executePostMessage:       true,
+			executeSendInvitations:   true,
+			postMessageText:          "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n@H1rono_K (H1rono)\n",
+			executeDeleteInvitations: true,
 		},
 	}
 
@@ -182,6 +190,9 @@ func TestAcceptOrReject(t *testing.T) {
 			invRepoMock.GetInvitationsFunc = func(context.Context, string) ([]*model.Invitation, error) {
 				return test.invitations, nil
 			}
+			invRepoMock.DeleteInvitationsFunc = func(ctx context.Context, invitationID string) error {
+				return nil
+			}
 
 			bh.AcceptOrReject(payload)
 
@@ -207,6 +218,13 @@ func TestAcceptOrReject(t *testing.T) {
 				assert.Equal(t, test.postMessageText, traqMock.PostMessageCalls()[0].Text)
 			} else {
 				assert.Len(t, traqMock.PostMessageCalls(), 0)
+			}
+
+			if test.executeDeleteInvitations {
+				assert.Len(t, invRepoMock.DeleteInvitationsCalls(), 1)
+				assert.Equal(t, payload.MessageID, invRepoMock.DeleteInvitationsCalls()[0].InvitationID)
+			} else {
+				assert.Len(t, invRepoMock.DeleteInvitationsCalls(), 0)
 			}
 
 		})
