@@ -67,3 +67,7 @@ func (g *GitHub) CheckUserExist(ctx context.Context, userID string) (bool, error
 
 	return true, nil
 }
+
+func (g *GitHub) OrgName() string {
+	return g.orgName
+}

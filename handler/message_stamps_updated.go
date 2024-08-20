@@ -18,7 +18,7 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 	ctx := context.Background()
 
 	for _, stamp := range p.Stamps {
-		if stamp.StampID == h.inactiveStampID && stamp.UserID == h.botUserID {
+		if stamp.StampID == h.inactiveStampID && stamp.UserID == h.botUser.ID() {
 			return // :kan:押されてたら、何もしない
 		}
 	}

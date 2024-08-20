@@ -129,11 +129,14 @@ https://q.trap.jp/messages/%s`, t.messageID)
 			t.Parallel()
 
 			traqMock := &mock.TraqMock{
-				GetBotUserIDFunc: func(context.Context) (string, error) {
-					return botUserID, nil
+				GetBotUserFunc: func(context.Context) (*model.User, error) {
+					return model.NewUser(botUserID, "BOT_traP-jp"), nil
 				},
 				PostMessageFunc: func(ctx context.Context, channelID string, text string) (string, error) {
 					return botPostMessageID, nil
+				},
+				AddStampFunc: func(context.Context, string, string, int) error {
+					return nil
 				},
 			}
 			repositoryMock := &repomock.InvitationMock{
@@ -151,7 +154,7 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				traqClient:   traqMock,
 				ir:           repositoryMock,
 				githubClient: gitHubMock,
-				botUserID:    botUserID,
+				botUser:      model.NewUser(botUserID, "BOT_traP-jp"),
 				Config:       &Config{botChannelID: "botChannelID", adminGroupName: "GitHub_org_Admin"},
 			}
 
@@ -212,7 +215,7 @@ func TestList(t *testing.T) {
 		bh := &BotHandler{
 			traqClient: traqMock,
 			ir:         repositoryMock,
-			botUserID:  botUserID,
+			botUser:    model.NewUser(botUserID, "BOT_traP-jp"),
 		}
 
 		payload := &payload.MessageCreated{

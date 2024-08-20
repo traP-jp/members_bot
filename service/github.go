@@ -11,4 +11,5 @@ import (
 type GitHub interface {
 	SendInvitations(ctx context.Context, invitations []*model.Invitation) error
 	CheckUserExist(ctx context.Context, userID string) (bool, error)
+	OrgName() string
 }

@@ -13,7 +13,7 @@ import (
 )
 
 func (h *BotHandler) MessageCreated(p *payload.MessageCreated) {
-	mentionRawText, isMention := checkIfBotMentioned(p, h.botUserID)
+	mentionRawText, isMention := checkIfBotMentioned(p, h.botUser.ID())
 	if !isMention {
 		return
 	}
@@ -37,6 +37,13 @@ func (h *BotHandler) MessageCreated(p *payload.MessageCreated) {
 				return ok
 			},
 			fn: h.list,
+		},
+		{
+			filter: func(p *payload.MessageCreated) bool {
+				ok, _ := regexp.MatchString(`^/(help|ヘルプ|助けて)$`, splitText[0])
+				return ok
+			},
+			fn: h.help,
 		},
 		{
 			filter: func(p *payload.MessageCreated) bool {
@@ -90,7 +97,7 @@ func listCommandMessage(message string) string {
 func (h *BotHandler) invite(p *payload.MessageCreated) {
 	ctx := context.Background()
 
-	mentionRawText, _ := checkIfBotMentioned(p, h.botUserID)
+	mentionRawText, _ := checkIfBotMentioned(p, h.botUser.ID())
 	splitText := regexp.MustCompile(`\s+`).Split(strings.TrimSpace(strings.Replace(p.Message.PlainText, mentionRawText, "", 1)), -1)
 
 	if len(splitText) < 2 {
@@ -182,7 +189,7 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 func (h *BotHandler) list(p *payload.MessageCreated) {
 	ctx := context.Background()
 
-	mentionRawText, _ := checkIfBotMentioned(p, h.botUserID)
+	mentionRawText, _ := checkIfBotMentioned(p, h.botUser.ID())
 	splitText := regexp.MustCompile(`\s+`).Split(strings.TrimSpace(strings.Replace(p.Message.PlainText, mentionRawText, "", 1)), -1)
 
 	if len(splitText) > 1 && slices.Contains([]string{"-h", "-help", "--help"}, splitText[1]) {
@@ -206,6 +213,17 @@ func (h *BotHandler) list(p *payload.MessageCreated) {
 	}
 
 	_, err = h.traqClient.PostMessage(ctx, p.Message.ChannelID, message)
+	if err != nil {
+		log.Println("failed to post message: ", err)
+	}
+}
+
+var helpDoc string
+
+func (h *BotHandler) help(p *payload.MessageCreated) {
+	ctx := context.Background()
+
+	_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, helpDoc)
 	if err != nil {
 		log.Println("failed to post message: ", err)
 	}

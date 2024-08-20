@@ -172,7 +172,7 @@ func TestAcceptOrReject(t *testing.T) {
 				traqClient:   &traqMock,
 				githubClient: &gitHubMock,
 				ir:           &invRepoMock,
-				botUserID:    botUserID,
+				botUser:      model.NewUser(botUserID, "BOT_traP-jp"),
 				Config: &Config{
 					acceptStampID:        acceptStampID,
 					rejectStampID:        rejectStampID,

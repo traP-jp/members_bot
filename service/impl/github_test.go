@@ -1,4 +1,4 @@
-// go:build github_env
+//go:build github_env
 
 // -tags github_env を追加するとテストで実行される。
 // GITHUB_TOKENの環境変数が必要なため、通常の実行では除外するようにしておく。

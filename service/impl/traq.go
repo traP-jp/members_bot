@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/traP-jp/members_bot/model"
 	"github.com/traP-jp/members_bot/service"
 	"github.com/traPtitech/go-traq"
 )
@@ -18,13 +19,13 @@ func NewTraq(traqClient *traq.APIClient) *Traq {
 	return &Traq{traqClient: traqClient}
 }
 
-func (t *Traq) GetBotUserID(ctx context.Context) (string, error) {
+func (t *Traq) GetBotUser(ctx context.Context) (*model.User, error) {
 	me, _, err := t.traqClient.MeApi.GetOIDCUserInfo(ctx).Execute()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return me.Sub, nil
+	return model.NewUser(me.Sub, me.Name), nil
 }
 
 func (t *Traq) PostMessage(ctx context.Context, channelID, text string) (string, error) {
