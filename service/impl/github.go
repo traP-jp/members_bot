@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -48,4 +49,21 @@ func (g *GitHub) SendInvitations(ctx context.Context, invitations []*model.Invit
 	}
 
 	return nil
+}
+
+func (g *GitHub) CheckUserExist(ctx context.Context, userID string) (bool, error) {
+	user, _, err := g.cl.Users.Get(ctx, userID)
+	var gitHubErr *github.ErrorResponse
+	if errors.As(err, &gitHubErr) && gitHubErr.Response.StatusCode == 404 {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("failed to get GitHub user: %w", err)
+	}
+
+	if user.GetType() != "User" {
+		return false, nil
+	}
+
+	return true, nil
 }
