@@ -38,6 +38,32 @@ func (h *BotHandler) MessageCreated(p *payload.MessageCreated) {
 			},
 			fn: h.list,
 		},
+		{
+			filter: func(p *payload.MessageCreated) bool {
+				ok, _ := regexp.MatchString(`^/ping$`, splitText[0])
+				return ok
+			},
+			fn: func(p *payload.MessageCreated) {
+				ctx := context.Background()
+				_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, "pong")
+				if err != nil {
+					log.Println("failed to post message: ", err)
+				}
+			},
+		},
+		{
+			filter: func(p *payload.MessageCreated) bool {
+				ok, _ := regexp.MatchString(`^/`, splitText[0])
+				return ok
+			},
+			fn: func(p *payload.MessageCreated) {
+				ctx := context.Background()
+				_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, ":shiran_zubora.ex-large:")
+				if err != nil {
+					log.Println("failed to post message: ", err)
+				}
+			},
+		},
 	}
 
 	for _, v := range m {
