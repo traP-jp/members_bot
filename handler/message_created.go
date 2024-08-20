@@ -60,11 +60,34 @@ func (h *BotHandler) Invite(p *payload.MessageCreated) {
 		return
 	}
 
-	invitationMessage := fmt.Sprintf("@%s\n", h.adminGroupName)
+	traQIDs := make([]string, 0, len(splitText)/2)
+	gitHubIDs := make([]string, 0, len(splitText)/2)
 	for i := 0; i < len(splitText); i += 2 {
 		traQID := splitText[i]
 		gitHubID := splitText[i+1]
-		invitationMessage += fmt.Sprintf("%s https://github.com/%s\n", traQID, gitHubID)
+
+		exist, err := h.githubClient.CheckUserExist(ctx, gitHubID)
+		if err != nil {
+			log.Println("failed to check user exist: ", err)
+			return
+		}
+		if !exist {
+			_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID,
+				fmt.Sprintf("GitHubユーザー %s は存在しません", gitHubID))
+			if err != nil {
+				log.Println("failed to post message: ", err)
+			}
+
+			return
+		}
+
+		traQIDs = append(traQIDs, traQID)
+		gitHubIDs = append(gitHubIDs, gitHubID)
+	}
+
+	invitationMessage := fmt.Sprintf("@%s\n", h.adminGroupName)
+	for i := range traQIDs {
+		invitationMessage += fmt.Sprintf("%s https://github.com/%s\n", traQIDs[i], gitHubIDs[i])
 	}
 	invitationMessage += fmt.Sprintf("https://q.trap.jp/messages/%s", p.Message.ID)
 
@@ -74,10 +97,8 @@ func (h *BotHandler) Invite(p *payload.MessageCreated) {
 	}
 
 	invitations := make([]*model.Invitation, 0, len(splitText)/2)
-	for i := 0; i < len(splitText); i += 2 {
-		traQID := splitText[i]
-		gitHubID := splitText[i+1]
-		invitations = append(invitations, model.NewInvitation(messageID, traQID, gitHubID))
+	for i := range traQIDs {
+		invitations = append(invitations, model.NewInvitation(messageID, traQIDs[i], gitHubIDs[i]))
 	}
 
 	err = h.ir.CreateInvitation(ctx, invitations)

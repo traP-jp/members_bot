@@ -25,6 +25,7 @@ func TestInvite(t *testing.T) {
 		plainText        string
 		messageID        string
 		embedded         []payload.EmbeddedInfo
+		gitHubUserExist  bool
 		postTextFunc     func(test) string
 		postToBotChannel bool
 		invitations      []*model.Invitation
@@ -38,6 +39,7 @@ func TestInvite(t *testing.T) {
 				{Type: "user", Raw: "@BOT_traP-jp", ID: botUserID},
 				{Type: "user", Raw: "@ikura-hamu", ID: uuid.New().String()},
 			},
+			gitHubUserExist: true,
 			postTextFunc: func(t test) string {
 				return fmt.Sprintf(`@GitHub_org_Admin
 @ikura-hamu https://github.com/ikura-hamu
@@ -53,6 +55,7 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				{Type: "user", Raw: "@BOT_traP-jp", ID: botUserID},
 				{Type: "user", Raw: "@ikura-hamu", ID: uuid.New().String()},
 			},
+			gitHubUserExist: true,
 			postTextFunc: func(t test) string {
 				return fmt.Sprintf(`@GitHub_org_Admin
 @ikura-hamu https://github.com/ikura-hamu
@@ -69,6 +72,7 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				{Type: "user", Raw: "@ikura-hamu", ID: uuid.New().String()},
 				{Type: "user", Raw: "@H1rono_K", ID: uuid.New().String()},
 			},
+			gitHubUserExist: true,
 			postTextFunc: func(t test) string {
 				return fmt.Sprintf(`@GitHub_org_Admin
 @ikura-hamu https://github.com/ikura-hamu
@@ -106,6 +110,18 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				return inviteCommandMessage("/invite は、GitHubのOrganizationに招待するためのコマンドです。")
 			},
 		},
+		"GitHubユーザーが存在しない": {
+			plainText: "@BOT_traP-jp /invite @ikura-hamu no-user",
+			messageID: messageID,
+			embedded: []payload.EmbeddedInfo{
+				{Type: "user", Raw: "@BOT_traP-jp", ID: botUserID},
+				{Type: "user", Raw: "@ikura-hamu", ID: uuid.New().String()},
+			},
+			gitHubUserExist: false,
+			postTextFunc: func(test) string {
+				return "GitHubユーザー no-user は存在しません"
+			},
+		},
 	}
 
 	for name, test := range testCases {
@@ -125,12 +141,18 @@ https://q.trap.jp/messages/%s`, t.messageID)
 					return nil
 				},
 			}
+			gitHubMock := &mock.GitHubMock{
+				CheckUserExistFunc: func(ctx context.Context, userID string) (bool, error) {
+					return test.gitHubUserExist, nil
+				},
+			}
 
 			bh := &BotHandler{
-				traqClient: traqMock,
-				ir:         repositoryMock,
-				botUserID:  botUserID,
-				Config:     &Config{botChannelID: "botChannelID", adminGroupName: "GitHub_org_Admin"},
+				traqClient:   traqMock,
+				ir:           repositoryMock,
+				githubClient: gitHubMock,
+				botUserID:    botUserID,
+				Config:       &Config{botChannelID: "botChannelID", adminGroupName: "GitHub_org_Admin"},
 			}
 
 			payload := &payload.MessageCreated{
