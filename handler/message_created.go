@@ -166,6 +166,17 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 		return
 	}
 
+	err = h.traqClient.AddStamp(ctx, p.Message.ID, h.acceptStampID, 1)
+	if err != nil {
+		log.Println("failed to add stamp: ", err)
+		return
+	}
+	err = h.traqClient.AddStamp(ctx, p.Message.ID, h.rejectStampID, 1)
+	if err != nil {
+		log.Println("failed to add stamp: ", err)
+		return
+	}
+
 }
 
 func (h *BotHandler) list(p *payload.MessageCreated) {
