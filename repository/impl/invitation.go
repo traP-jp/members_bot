@@ -46,6 +46,10 @@ func (i *Invitation) GetInvitations(ctx context.Context, id string) ([]*model.In
 		return nil, fmt.Errorf("failed to get invitations: %w", err)
 	}
 
+	if len(invitationSchemes) == 0 {
+		return nil, repository.ErrRecordNotFound
+	}
+
 	invitations := make([]*model.Invitation, 0, len(invitationSchemes))
 	for _, invitationScheme := range invitationSchemes {
 		invitations = append(invitations,

@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/traP-jp/members_bot/model"
+	"github.com/traP-jp/members_bot/repository"
 	repomock "github.com/traP-jp/members_bot/repository/mock"
 	"github.com/traP-jp/members_bot/service/mock"
 	"github.com/traPtitech/traq-ws-bot/payload"
@@ -26,6 +27,7 @@ func TestAcceptOrReject(t *testing.T) {
 		rejectStampThreshold     int
 		stamps                   []payload.MessageStamp
 		invitations              []*model.Invitation
+		GetInvitationsErr        error
 		executeAddStamp          bool
 		executePostMessage       bool
 		executeSendInvitations   bool
@@ -143,6 +145,14 @@ func TestAcceptOrReject(t *testing.T) {
 			postMessageText:          "招待を送信しました。確認してください\n@ikura-hamu (ikura-hamu)\n@H1rono_K (H1rono)\n",
 			executeDeleteInvitations: true,
 		},
+		"GetInvitationsがErrRecordNotFound": {
+			addStampThreshold:    1,
+			rejectStampThreshold: 1,
+			stamps: []payload.MessageStamp{
+				{StampID: acceptStampID, UserID: adminIDs[0], CreatedAt: time.Now()},
+			},
+			GetInvitationsErr: repository.ErrRecordNotFound,
+		},
 	}
 
 	for name, test := range testCases {
@@ -188,7 +198,7 @@ func TestAcceptOrReject(t *testing.T) {
 			}
 
 			invRepoMock.GetInvitationsFunc = func(context.Context, string) ([]*model.Invitation, error) {
-				return test.invitations, nil
+				return test.invitations, test.GetInvitationsErr
 			}
 			invRepoMock.DeleteInvitationsFunc = func(ctx context.Context, invitationID string) error {
 				return nil

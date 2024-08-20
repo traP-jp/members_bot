@@ -2,10 +2,12 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"slices"
 
+	"github.com/traP-jp/members_bot/repository"
 	"github.com/traPtitech/traq-ws-bot/payload"
 )
 
@@ -24,6 +26,15 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 	adminIDs, err := h.traqClient.GetGroupMemberIDs(ctx, h.adminGroupID)
 	if err != nil {
 		log.Printf("failed to get group member IDs: %v", err)
+		return
+	}
+
+	invitations, err := h.ir.GetInvitations(ctx, p.MessageID)
+	if errors.Is(err, repository.ErrRecordNotFound) {
+		return
+	}
+	if err != nil {
+		log.Printf("failed to get invitations: %v", err)
 		return
 	}
 
@@ -67,12 +78,6 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 		if err != nil {
 			log.Printf("failed to delete invitations: %v", err)
 		}
-		return
-	}
-
-	invitations, err := h.ir.GetInvitations(ctx, p.MessageID)
-	if err != nil {
-		log.Printf("failed to get invitations: %v", err)
 		return
 	}
 

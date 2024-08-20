@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/traP-jp/members_bot/model"
+	"github.com/traP-jp/members_bot/repository"
 	"github.com/traP-jp/members_bot/repository/impl/schema"
 )
 
@@ -49,6 +50,7 @@ func TestGetInvitations(t *testing.T) {
 		invitationID string
 		fixture      []*schema.Invitation
 		expected     []*model.Invitation
+		expectedErr  error
 	}
 
 	invitationID1 := uuid.NewString()
@@ -78,6 +80,7 @@ func TestGetInvitations(t *testing.T) {
 			invitationID: uuid.NewString(),
 			fixture:      []*schema.Invitation{},
 			expected:     []*model.Invitation{},
+			expectedErr:  repository.ErrRecordNotFound,
 		},
 	}
 
@@ -97,13 +100,14 @@ func TestGetInvitations(t *testing.T) {
 
 			invitations, err := ir.GetInvitations(ctx, test.invitationID)
 
-			assert.NoError(t, err)
 			assert.Len(t, invitations, len(test.expected))
 			for i, invitation := range invitations {
 				assert.Equal(t, test.expected[i].ID(), invitation.ID())
 				assert.Equal(t, test.expected[i].GitHubID(), invitation.GitHubID())
 				assert.Equal(t, test.expected[i].TraqID(), invitation.TraqID())
 			}
+
+			assert.ErrorIs(t, err, test.expectedErr)
 		})
 	}
 }
