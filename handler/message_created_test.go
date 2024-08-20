@@ -168,7 +168,7 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				},
 				Base: payload.Base{EventTime: time.Now()},
 			}
-			bh.Invite(payload)
+			bh.invite(payload)
 
 			assert.Len(t, traqMock.PostMessageCalls(), 1)
 			assert.Equal(t, test.postTextFunc(test), traqMock.PostMessageCalls()[0].Text)
@@ -228,7 +228,7 @@ func TestList(t *testing.T) {
 			},
 			Base: payload.Base{EventTime: time.Now()},
 		}
-		bh.List(payload)
+		bh.list(payload)
 
 		assert.Len(t, traqMock.PostMessageCalls(), 1)
 		assert.Equal(t, "招待一覧\n@traq_id (github_id)\n@traq_id2 (github_id2)\n", traqMock.PostMessageCalls()[0].Text)

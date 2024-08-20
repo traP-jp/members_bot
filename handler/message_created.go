@@ -12,22 +12,59 @@ import (
 	"github.com/traPtitech/traq-ws-bot/payload"
 )
 
+func (h *BotHandler) MessageCreated(p *payload.MessageCreated) {
+	mentionRawText, isMention := checkIfBotMentioned(p, h.botUserID)
+	if !isMention {
+		return
+	}
+
+	splitText := regexp.MustCompile(`\s+`).Split(strings.TrimSpace(strings.Replace(p.Message.PlainText, mentionRawText, "", 1)), -1)
+
+	m := []struct {
+		filter func(p *payload.MessageCreated) bool
+		fn     func(p *payload.MessageCreated)
+	}{
+		{
+			filter: func(p *payload.MessageCreated) bool {
+				ok, _ := regexp.MatchString(`^/(invite|招待)$`, splitText[0])
+				return ok
+			},
+			fn: h.invite,
+		},
+		{
+			filter: func(p *payload.MessageCreated) bool {
+				ok, _ := regexp.MatchString(`^/(list|確認)$`, splitText[0])
+				return ok
+			},
+			fn: h.list,
+		},
+	}
+
+	for _, v := range m {
+		if v.filter(p) {
+			v.fn(p)
+			return
+		}
+	}
+}
+
 const (
-	inviteCommandUsage = `@BOT_traP-jp /(invite|招待) <traQID> <GitHubID> ...`
+	inviteCommandUsage = "`@BOT_traP-jp /(invite|招待) <traQID> <GitHubID> ...`"
+	listCommandUsage   = "`@BOT_traP-jp /(list|確認)`"
 )
 
 func inviteCommandMessage(message string) string {
 	return fmt.Sprintf("%s\n%s", message, inviteCommandUsage)
 }
 
-func (h *BotHandler) Invite(p *payload.MessageCreated) {
+func listCommandMessage(message string) string {
+	return fmt.Sprintf("%s\n%s", message, listCommandUsage)
+}
+
+func (h *BotHandler) invite(p *payload.MessageCreated) {
 	ctx := context.Background()
 
-	mentionRawText, ok := checkIfBotMentioned(p, h.botUserID)
-	if !ok {
-		return
-	}
-
+	mentionRawText, _ := checkIfBotMentioned(p, h.botUserID)
 	splitText := regexp.MustCompile(`\s+`).Split(strings.TrimSpace(strings.Replace(p.Message.PlainText, mentionRawText, "", 1)), -1)
 
 	if len(splitText) < 2 {
@@ -35,10 +72,6 @@ func (h *BotHandler) Invite(p *payload.MessageCreated) {
 		if err != nil {
 			log.Println("failed to post message: ", err)
 		}
-		return
-	}
-
-	if ok, _ := regexp.MatchString(`^/(invite|招待)$`, splitText[0]); !ok {
 		return
 	}
 
@@ -109,20 +142,18 @@ func (h *BotHandler) Invite(p *payload.MessageCreated) {
 
 }
 
-func (h *BotHandler) List(p *payload.MessageCreated) {
+func (h *BotHandler) list(p *payload.MessageCreated) {
 	ctx := context.Background()
 
-	mentionRawText, ok := checkIfBotMentioned(p, h.botUserID)
-	if !ok {
-		return
-	}
-
+	mentionRawText, _ := checkIfBotMentioned(p, h.botUserID)
 	splitText := regexp.MustCompile(`\s+`).Split(strings.TrimSpace(strings.Replace(p.Message.PlainText, mentionRawText, "", 1)), -1)
-	if len(splitText) < 1 {
-		return
-	}
 
-	if ok, _ := regexp.MatchString(`^/(list|確認)$`, splitText[0]); !ok {
+	if len(splitText) > 1 && slices.Contains([]string{"-h", "-help", "--help"}, splitText[1]) {
+		_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID,
+			listCommandMessage("/list は、招待一覧を表示するためのコマンドです。"))
+		if err != nil {
+			log.Println("failed to post message: ", err)
+		}
 		return
 	}
 

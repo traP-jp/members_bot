@@ -50,7 +50,8 @@ func main() {
 	bot.OnError(func(message string) {
 		log.Println("Received ERROR message: " + message)
 	})
-	bot.OnMessageCreated(bh.Invite)
+
+	bot.OnMessageCreated(bh.MessageCreated)
 	bot.OnBotMessageStampsUpdated(bh.AcceptOrReject)
 
 	log.Fatal(bot.Start())
