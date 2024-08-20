@@ -19,12 +19,12 @@ func NewTraq(traqClient *traq.APIClient) *Traq {
 }
 
 func (t *Traq) GetBotUserID(ctx context.Context) (string, error) {
-	me, _, err := t.traqClient.MeApi.GetMe(ctx).Execute()
+	me, _, err := t.traqClient.MeApi.GetOIDCUserInfo(ctx).Execute()
 	if err != nil {
 		return "", err
 	}
 
-	return me.Id, nil
+	return me.Sub, nil
 }
 
 func (t *Traq) PostMessage(ctx context.Context, channelID, text string) (string, error) {
