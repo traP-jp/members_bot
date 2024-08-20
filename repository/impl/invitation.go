@@ -67,3 +67,19 @@ func (i *Invitation) DeleteInvitations(ctx context.Context, id string) error {
 
 	return nil
 }
+
+func (i *Invitation) GetAllInvitations(ctx context.Context) ([]*model.Invitation, error) {
+	var invitations []schema.Invitation
+	err := i.db.NewSelect().Model(&invitations).Scan(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get invitations: %w", err)
+	}
+
+	invitationsModel := make([]*model.Invitation, 0, len(invitations))
+	for _, invitation := range invitations {
+		invitationsModel = append(invitationsModel,
+			model.NewInvitation(invitation.ID, invitation.TraqID, invitation.GitHubID))
+	}
+
+	return invitationsModel, nil
+}

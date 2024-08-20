@@ -139,3 +139,45 @@ func TestDeleteInvitations(t *testing.T) {
 		assert.Len(t, invitations, 0)
 	})
 }
+
+func TestGetAllInvitations(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ctx := context.Background()
+
+		t.Cleanup(func() {
+			_, err := testDB.NewTruncateTable().Model(&schema.Invitation{}).Exec(ctx)
+			require.NoError(t, err)
+		})
+
+		ir := NewInvitation(testDB)
+
+		invitations := []*model.Invitation{
+			model.NewInvitation(uuid.NewString(), "github_id", "traq_id"),
+			model.NewInvitation(uuid.NewString(), "github_id2", "traq_id2"),
+		}
+		{
+			invitationsTable := make([]schema.Invitation, 0, len(invitations))
+			for _, invitation := range invitations {
+				invitationsTable = append(invitationsTable, schema.Invitation{
+					ID:       invitation.ID(),
+					GitHubID: invitation.GitHubID(),
+					TraqID:   invitation.TraqID(),
+				})
+			}
+
+			_, err := ir.db.NewInsert().Model(&invitationsTable).Exec(ctx)
+			require.NoError(t, err)
+		}
+
+		result, err := ir.GetAllInvitations(ctx)
+		require.NoError(t, err)
+
+		assert.Len(t, result, len(invitations))
+
+		for i, invitation := range result {
+			assert.Equal(t, invitations[i].ID(), invitation.ID())
+			assert.Equal(t, invitations[i].GitHubID(), invitation.GitHubID())
+			assert.Equal(t, invitations[i].TraqID(), invitation.TraqID())
+		}
+	})
+}
