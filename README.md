@@ -20,7 +20,7 @@ GoとMySQL(MariaDB)
 - `REJECT_STAMP_THRESHOLD` 何個スタンプがついたら却下とするか
 - `TRAQ_BOT_TOKEN` traQのBot token
 - `NS_MARIADB_DATABASE`, `MYSQL_DATABASE` (default: `members_bot`) DBのデータベース名。NS_の方が優先される。
-- `NS_MARIADB_HOST`, `MYSQL_HOST` (default: `db`) DBのホスト名。NS_の方が優先される。
+- `NS_MARIADB_HOSTNAME`, `MYSQL_HOSTNAME` (default: `db`) DBのホスト名。NS_の方が優先される。
 - `NS_MARIADB_PASSWORD`, `MYSQL_PASSWORD` (default `pass`) DBのパスワード。NS_の方が優先される。
 - `NS_MARIADB_PORT`, `MYSQL_PORT` (default `3306`) DBのポート番号。NS_の方が優先される。
 - `NS_MARIADB_USER`, `MYSQL_USER` (default: `root`) DBのユーザー。NS_の方が優先される。

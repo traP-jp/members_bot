@@ -22,7 +22,7 @@ func NewDB() (*bun.DB, error) {
 		User:                 cmp.Or(os.Getenv("NS_MARIADB_USER"), os.Getenv("MYSQL_USER"), "root"),
 		Passwd:               cmp.Or(os.Getenv("NS_MARIADB_PASSWORD"), os.Getenv("MYSQL_PASSWORD"), "pass"),
 		Net:                  "tcp",
-		Addr:                 cmp.Or(os.Getenv("NS_MARIADB_HOST"), os.Getenv("MYSQL_HOST"), "db") + ":" + cmp.Or(os.Getenv("NS_MARIADB_PORT"), os.Getenv("MYSQL_PORT"), "3306"),
+		Addr:                 cmp.Or(os.Getenv("NS_MARIADB_HOSTNAME"), os.Getenv("MYSQL_HOSTNAME"), "db") + ":" + cmp.Or(os.Getenv("NS_MARIADB_PORT"), os.Getenv("MYSQL_PORT"), "3306"),
 		DBName:               cmp.Or(os.Getenv("NS_MARIADB_DATABASE"), os.Getenv("MYSQL_DATABASE"), "members_bot"),
 		Loc:                  jst,
 		AllowNativePasswords: true,
