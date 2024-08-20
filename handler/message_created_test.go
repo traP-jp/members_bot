@@ -130,7 +130,7 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				traqClient: traqMock,
 				ir:         repositoryMock,
 				botUserID:  botUserID,
-				Config:     &Config{botChannelID: "botChannelID"},
+				Config:     &Config{botChannelID: "botChannelID", adminGroupName: "GitHub_org_Admin"},
 			}
 
 			payload := &payload.MessageCreated{

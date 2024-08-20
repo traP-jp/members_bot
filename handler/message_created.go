@@ -60,7 +60,7 @@ func (h *BotHandler) Invite(p *payload.MessageCreated) {
 		return
 	}
 
-	invitationMessage := "@GitHub_org_Admin\n"
+	invitationMessage := fmt.Sprintf("@%s\n", h.adminGroupName)
 	for i := 0; i < len(splitText); i += 2 {
 		traQID := splitText[i]
 		gitHubID := splitText[i+1]

@@ -14,6 +14,7 @@ type Config struct {
 	rejectStampThreshold int
 	inactiveStampID      string
 	adminGroupID         string
+	adminGroupName       string
 }
 
 func loadConfig() (*Config, error) {
@@ -60,6 +61,11 @@ func loadConfig() (*Config, error) {
 		return nil, errors.New("ADMIN_IDS is not set")
 	}
 
+	adminGroupName, ok := os.LookupEnv("ADMIN_GROUP_NAME")
+	if !ok {
+		return nil, errors.New("ADMIN_GROUP_NAME is not set")
+	}
+
 	return &Config{
 		botChannelID:         channelID,
 		acceptStampID:        acceptStampID,
@@ -68,5 +74,6 @@ func loadConfig() (*Config, error) {
 		rejectStampThreshold: rejectStampThreshold,
 		inactiveStampID:      inactiveStampID,
 		adminGroupID:         adminGroupID,
+		adminGroupName:       adminGroupName,
 	}, nil
 }
