@@ -109,6 +109,40 @@ func (h *BotHandler) Invite(p *payload.MessageCreated) {
 
 }
 
+func (h *BotHandler) List(p *payload.MessageCreated) {
+	ctx := context.Background()
+
+	mentionRawText, ok := checkIfBotMentioned(p, h.botUserID)
+	if !ok {
+		return
+	}
+
+	splitText := regexp.MustCompile(`\s+`).Split(strings.TrimSpace(strings.Replace(p.Message.PlainText, mentionRawText, "", 1)), -1)
+	if len(splitText) < 1 {
+		return
+	}
+
+	if ok, _ := regexp.MatchString(`^/(list|確認)$`, splitText[0]); !ok {
+		return
+	}
+
+	invitations, err := h.ir.GetAllInvitations(ctx)
+	if err != nil {
+		log.Println("failed to get invitations: ", err)
+		return
+	}
+
+	message := "招待一覧\n"
+	for _, inv := range invitations {
+		message += fmt.Sprintf("@%s (%s)\n", inv.TraqID(), inv.GitHubID())
+	}
+
+	_, err = h.traqClient.PostMessage(ctx, p.Message.ChannelID, message)
+	if err != nil {
+		log.Println("failed to post message: ", err)
+	}
+}
+
 func checkIfBotMentioned(p *payload.MessageCreated, botUserID string) (string, bool) {
 	for _, embed := range p.Message.Embedded {
 		if embed.Type == "user" && embed.ID == botUserID {

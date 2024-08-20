@@ -188,3 +188,49 @@ https://q.trap.jp/messages/%s`, t.messageID)
 	}
 
 }
+
+func TestList(t *testing.T) {
+	t.Run("特に問題なし", func(t *testing.T) {
+		t.Parallel()
+
+		botUserID := uuid.NewString()
+
+		traqMock := &mock.TraqMock{
+			PostMessageFunc: func(context.Context, string, string) (string, error) {
+				return "", nil
+			},
+		}
+		repositoryMock := &repomock.InvitationMock{
+			GetAllInvitationsFunc: func(context.Context) ([]*model.Invitation, error) {
+				return []*model.Invitation{
+					model.NewInvitation(uuid.New().String(), "traq_id", "github_id"),
+					model.NewInvitation(uuid.New().String(), "traq_id2", "github_id2"),
+				}, nil
+			},
+		}
+
+		bh := &BotHandler{
+			traqClient: traqMock,
+			ir:         repositoryMock,
+			botUserID:  botUserID,
+		}
+
+		payload := &payload.MessageCreated{
+			Message: payload.Message{
+				PlainText: "@BOT_traP-jp /list",
+				ID:        uuid.New().String(),
+				ChannelID: uuid.New().String(),
+				Text:      "現時点の実装では使われない",
+				Embedded:  []payload.EmbeddedInfo{{Type: "user", Raw: "@BOT_traP-jp", ID: botUserID}},
+				User:      payload.User{},
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
+			Base: payload.Base{EventTime: time.Now()},
+		}
+		bh.List(payload)
+
+		assert.Len(t, traqMock.PostMessageCalls(), 1)
+		assert.Equal(t, "招待一覧\n@traq_id (github_id)\n@traq_id2 (github_id2)\n", traqMock.PostMessageCalls()[0].Text)
+	})
+}
