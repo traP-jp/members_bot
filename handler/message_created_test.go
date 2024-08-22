@@ -155,7 +155,12 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				ir:           repositoryMock,
 				githubClient: gitHubMock,
 				botUser:      model.NewUser(botUserID, "BOT_traP-jp"),
-				Config:       &Config{botChannelID: "botChannelID", adminGroupName: "GitHub_org_Admin"},
+				Config: &Config{
+					botChannelID:   "botChannelID",
+					adminGroupName: "GitHub_org_Admin",
+					acceptStampID:  "acceptStampID",
+					rejectStampID:  "rejectStampID",
+				},
 			}
 
 			payload := &payload.MessageCreated{
@@ -186,6 +191,18 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				for i, inv := range test.invitations {
 					assert.Equal(t, inv, repositoryMock.CreateInvitationCalls()[0].Invitations[i])
 				}
+			}
+
+			if test.postToBotChannel {
+				assert.Len(t, traqMock.AddStampCalls(), 2)
+
+				assert.Equal(t, botPostMessageID, traqMock.AddStampCalls()[0].MessageID)
+				assert.Equal(t, "acceptStampID", traqMock.AddStampCalls()[0].StampID)
+				assert.Equal(t, 1, traqMock.AddStampCalls()[0].Count)
+
+				assert.Equal(t, botPostMessageID, traqMock.AddStampCalls()[1].MessageID)
+				assert.Equal(t, "rejectStampID", traqMock.AddStampCalls()[1].StampID)
+				assert.Equal(t, 1, traqMock.AddStampCalls()[1].Count)
 			}
 		})
 	}
