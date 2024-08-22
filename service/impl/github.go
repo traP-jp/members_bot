@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/google/go-github/v63/github"
@@ -40,7 +39,7 @@ func NewGitHub(orgName string) (*GitHub, error) {
 		return nil, errors.New("GITHUB_PRIVATE_KEY is not set")
 	}
 
-	irt, err := ghinstallation.New(http.DefaultTransport, gitHubAppID, gitHubAppInstallationID, []byte(strings.ReplaceAll(privateKeyStr, " ", "\n")))
+	irt, err := ghinstallation.New(http.DefaultTransport, gitHubAppID, gitHubAppInstallationID, []byte(privateKeyStr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GitHub installation round tripper: %w", err)
 	}
