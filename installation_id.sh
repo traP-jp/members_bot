@@ -6,6 +6,8 @@ client_id=$1 # Client ID as first argument
 
 pem=$( cat $2 ) # file path of the private key as second argument
 
+org_name=$3 # Organization name as third argument
+
 now=$(date +%s)
 iat=$((${now} - 60)) # Issues 60 seconds in the past
 exp=$((${now} + 600)) # Expires 10 minutes in the future
@@ -36,4 +38,11 @@ signature=$(
 
 # Create JWT
 JWT="${header_payload}"."${signature}"
-printf '%s\n' "JWT: $JWT"
+# printf '%s\n' "JWT: $JWT"
+
+curl -s -L \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer $JWT" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    https://api.github.com/orgs/$org_name/installation \
+    | jq .id
