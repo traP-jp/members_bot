@@ -2,6 +2,7 @@ package migrate
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/uptrace/bun"
@@ -10,9 +11,10 @@ import (
 
 var m = []func(*migrate.Migrations){
 	v1,
+	v2,
 }
 
-func Migrate(db *bun.DB) {
+func Migrate(db *bun.DB) error {
 	migrations := migrate.NewMigrations()
 
 	for _, f := range m {
@@ -24,15 +26,17 @@ func Migrate(db *bun.DB) {
 	migrator := migrate.NewMigrator(db, migrations)
 	err := migrator.Init(ctx)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to initialize migrator: %w", err)
 	}
 
-	g, err := migrator.Migrate(context.Background())
+	g, err := migrator.Migrate(ctx)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to migrate: %w", err)
 	}
 
 	if g.IsZero() {
 		log.Println("database is up-to-date")
 	}
+
+	return nil
 }

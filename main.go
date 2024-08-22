@@ -38,7 +38,9 @@ func main() {
 		panic(err)
 	}
 
-	schema.Migrate(db)
+	if err := schema.Migrate(db); err != nil {
+		panic(err)
+	}
 
 	ir := repoimpl.NewInvitation(db)
 

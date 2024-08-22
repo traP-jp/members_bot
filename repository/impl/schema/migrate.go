@@ -5,6 +5,6 @@ import (
 	"github.com/uptrace/bun"
 )
 
-func Migrate(db *bun.DB) {
-	migrate.Migrate(db)
+func Migrate(db *bun.DB) error {
+	return migrate.Migrate(db)
 }
