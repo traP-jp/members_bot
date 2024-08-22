@@ -37,7 +37,7 @@ func TestCreateInvitation(t *testing.T) {
 
 		assert.Len(t, invitationsTable, len(invitations))
 		for i, invitation := range invitationsTable {
-			assert.Equal(t, invitations[i].ID(), invitation.ID)
+			assert.Equal(t, invitations[i].MessageID(), invitation.MessageID)
 			assert.Equal(t, invitations[i].GitHubID(), invitation.GitHubID)
 			assert.Equal(t, invitations[i].TraqID(), invitation.TraqID)
 			assert.WithinDuration(t, time.Now(), invitation.CreatedAt, time.Second)
@@ -53,6 +53,11 @@ func TestGetInvitations(t *testing.T) {
 		expectedErr  error
 	}
 
+	t.Cleanup(func() {
+		_, err := testDB.NewTruncateTable().Model(&schema.Invitation{}).Exec(context.Background())
+		require.NoError(t, err)
+	})
+
 	invitationID1 := uuid.NewString()
 	invitationID2 := uuid.NewString()
 
@@ -60,7 +65,7 @@ func TestGetInvitations(t *testing.T) {
 		"特に問題なし": {
 			invitationID: invitationID1,
 			fixture: []*schema.Invitation{
-				{ID: invitationID1, GitHubID: "github_id", TraqID: "traq_id"},
+				{MessageID: invitationID1, GitHubID: "github_id", TraqID: "traq_id"},
 			},
 			expected: []*model.Invitation{
 				model.NewInvitation(invitationID1, "traq_id", "github_id"),
@@ -69,8 +74,8 @@ func TestGetInvitations(t *testing.T) {
 		"他の招待があっても問題なし": {
 			invitationID: invitationID2,
 			fixture: []*schema.Invitation{
-				{ID: invitationID2, GitHubID: "github_id2", TraqID: "traq_id2"},
-				{ID: uuid.NewString(), GitHubID: "github_id3", TraqID: "traq_id3"},
+				{MessageID: invitationID2, GitHubID: "github_id2", TraqID: "traq_id2"},
+				{MessageID: uuid.NewString(), GitHubID: "github_id3", TraqID: "traq_id3"},
 			},
 			expected: []*model.Invitation{
 				model.NewInvitation(invitationID2, "traq_id2", "github_id2"),
@@ -102,7 +107,7 @@ func TestGetInvitations(t *testing.T) {
 
 			assert.Len(t, invitations, len(test.expected))
 			for i, invitation := range invitations {
-				assert.Equal(t, test.expected[i].ID(), invitation.ID())
+				assert.Equal(t, test.expected[i].MessageID(), invitation.MessageID())
 				assert.Equal(t, test.expected[i].GitHubID(), invitation.GitHubID())
 				assert.Equal(t, test.expected[i].TraqID(), invitation.TraqID())
 			}
@@ -125,7 +130,7 @@ func TestDeleteInvitations(t *testing.T) {
 
 		invitationID := uuid.NewString()
 		{
-			_, err := ir.db.NewInsert().Model(&schema.Invitation{ID: invitationID}).Exec(ctx)
+			_, err := ir.db.NewInsert().Model(&schema.Invitation{MessageID: invitationID}).Exec(ctx)
 			require.NoError(t, err)
 		}
 
@@ -159,9 +164,9 @@ func TestGetAllInvitations(t *testing.T) {
 			invitationsTable := make([]schema.Invitation, 0, len(invitations))
 			for _, invitation := range invitations {
 				invitationsTable = append(invitationsTable, schema.Invitation{
-					ID:       invitation.ID(),
-					GitHubID: invitation.GitHubID(),
-					TraqID:   invitation.TraqID(),
+					MessageID: invitation.MessageID(),
+					GitHubID:  invitation.GitHubID(),
+					TraqID:    invitation.TraqID(),
 				})
 			}
 
@@ -175,7 +180,7 @@ func TestGetAllInvitations(t *testing.T) {
 		assert.Len(t, result, len(invitations))
 
 		for i, invitation := range result {
-			assert.Equal(t, invitations[i].ID(), invitation.ID())
+			assert.Equal(t, invitations[i].MessageID(), invitation.MessageID())
 			assert.Equal(t, invitations[i].GitHubID(), invitation.GitHubID())
 			assert.Equal(t, invitations[i].TraqID(), invitation.TraqID())
 		}

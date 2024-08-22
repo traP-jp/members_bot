@@ -1,21 +1,21 @@
 package model
 
 type Invitation struct {
-	id       string
-	traqID   string
-	gitHubID string
+	messageID string
+	traqID    string
+	gitHubID  string
 }
 
 func NewInvitation(id string, traqID, gitHubID string) *Invitation {
 	return &Invitation{
-		id:       id,
-		traqID:   traqID,
-		gitHubID: gitHubID,
+		messageID: id,
+		traqID:    traqID,
+		gitHubID:  gitHubID,
 	}
 }
 
-func (i *Invitation) ID() string {
-	return i.id
+func (i *Invitation) MessageID() string {
+	return i.messageID
 }
 
 func (i *Invitation) TraqID() string {
