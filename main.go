@@ -31,7 +31,10 @@ func main() {
 
 	tc := impl.NewTraq(bot.API())
 
-	gh := impl.NewGitHub(orgName)
+	gh, err := impl.NewGitHub(orgName)
+	if err != nil {
+		panic(err)
+	}
 
 	db, err := repoimpl.NewDB()
 	if err != nil {

@@ -4,8 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
 	"os"
+	"strconv"
 
+	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/google/go-github/v63/github"
 	"github.com/traP-jp/members_bot/model"
 	"github.com/traP-jp/members_bot/service"
@@ -18,13 +22,41 @@ type GitHub struct {
 	orgName string
 }
 
-func NewGitHub(orgName string) *GitHub {
-	token := os.Getenv("GITHUB_TOKEN")
-	cl := github.NewClient(nil).WithAuthToken(token)
+func NewGitHub(orgName string) (*GitHub, error) {
+	gitHubAppIDStr := os.Getenv("GITHUB_APP_ID")
+	gitHubAppID, err := strconv.ParseInt(gitHubAppIDStr, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse GITHUB_APP_ID: %w", err)
+	}
+
+	gitHubAppInstallIDStr := os.Getenv("GITHUB_APP_INSTALLATION_ID")
+	gitHubAppInstallationID, err := strconv.ParseInt(gitHubAppInstallIDStr, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse GITHUB_APP_INSTALL_ID: %w", err)
+	}
+
+	privateKeyStr, ok := os.LookupEnv("GITHUB_APP_PRIVATE_KEY")
+	if !ok {
+		return nil, errors.New("GITHUB_PRIVATE_KEY is not set")
+	}
+
+	log.Println(privateKeyStr)
+
+	log.Println(`aa
+bb`)
+
+	irt, err := ghinstallation.New(http.DefaultTransport, gitHubAppID, gitHubAppInstallationID, []byte(privateKeyStr))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GitHub installation round tripper: %w", err)
+	}
+
+	// token := os.Getenv("GITHUB_TOKEN")
+	cl := github.NewClient(&http.Client{Transport: irt})
+
 	return &GitHub{
 		cl:      cl,
 		orgName: orgName,
-	}
+	}, nil
 }
 
 func (g *GitHub) SendInvitations(ctx context.Context, invitations []*model.Invitation) error {
