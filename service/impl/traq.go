@@ -60,3 +60,15 @@ func (t *Traq) GetGroupMemberIDs(ctx context.Context, groupID string) ([]string,
 
 	return memberIDs, nil
 }
+
+func (t *Traq) UpdateUserBio(ctx context.Context, bio string) error {
+	_, err := t.traqClient.MeApi.
+		EditMe(ctx).PatchMeRequest(traq.PatchMeRequest{Bio: &bio}).
+		Execute()
+
+	if err != nil {
+		return fmt.Errorf("failed to update user bio: %w", err)
+	}
+
+	return nil
+}

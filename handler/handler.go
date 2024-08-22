@@ -46,6 +46,11 @@ func NewBotHandler(traqClient service.Traq, gitHubClient service.GitHub, ir repo
 		return nil, fmt.Errorf("failed to generate help doc: %w", err)
 	}
 
+	err = h.traqClient.UpdateUserBio(ctx, helpDoc)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update user bio: %w", err)
+	}
+
 	return h, nil
 }
 
