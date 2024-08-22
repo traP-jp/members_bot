@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -39,11 +38,6 @@ func NewGitHub(orgName string) (*GitHub, error) {
 	if !ok {
 		return nil, errors.New("GITHUB_PRIVATE_KEY is not set")
 	}
-
-	log.Println(privateKeyStr)
-
-	log.Println(`aa
-bb`)
 
 	irt, err := ghinstallation.New(http.DefaultTransport, gitHubAppID, gitHubAppInstallationID, []byte(privateKeyStr))
 	if err != nil {

@@ -43,3 +43,12 @@ docker compose watch
 ```sh
 docker compose logs
 ```
+
+### テスト
+
+`handler`パッケージと`repository/impl`パッケージで、ユニットテストを書いている。
+
+- `handler`パッケージでは、serviceとrepositoryのmockとして、[matryer/moq](https://github.com/matryer/moq) を使っている。mockはGit管理に含めていないので、初めてテストを実行するときは`go generate ./...`でmockを生成する。interface定義を変えたときもmock生成が必要である。
+- `repository/impl`パッケージでは、[testcontainers/testcontainers-go](https://github.com/testcontainers/testcontainers-go)でDockerコンテナを使ったDB操作のテストを書いている。テストを実行する際はDockerが必要である。
+
+`service/impl/github_test.go`[service/impl/github_test.go]もあるが、このテストはGitHubのトークンが必要なので、デフォルトでは実行されない。`go test`の引数に`-tags github_env`を含めると実行される。
