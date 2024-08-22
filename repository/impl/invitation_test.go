@@ -14,35 +14,49 @@ import (
 )
 
 func TestCreateInvitation(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		ctx := context.Background()
+	testCases := map[string]struct {
+		invitations []*model.Invitation
+	}{
+		"招待が1つ": {
+			invitations: []*model.Invitation{
+				model.NewInvitation(uuid.NewString(), "github_id", "traq_id"),
+			},
+		},
+		"招待が複数": {
+			invitations: []*model.Invitation{
+				model.NewInvitation("same_id", "github_id", "traq_id"),
+				model.NewInvitation("same_id", "github_id2", "traq_id2"),
+			},
+		},
+	}
 
-		t.Cleanup(func() {
-			_, err := testDB.NewTruncateTable().Model(&schema.Invitation{}).Exec(ctx)
+	for name, test := range testCases {
+		t.Run(name, func(t *testing.T) {
+			ctx := context.Background()
+
+			t.Cleanup(func() {
+				_, err := testDB.NewTruncateTable().Model(&schema.Invitation{}).Exec(ctx)
+				require.NoError(t, err)
+			})
+
+			ir := NewInvitation(testDB)
+
+			err := ir.CreateInvitation(ctx, test.invitations)
+			assert.NoError(t, err)
+
+			var invitationsTable []schema.Invitation
+			err = ir.db.NewSelect().Model(&invitationsTable).Scan(ctx)
 			require.NoError(t, err)
+
+			assert.Len(t, invitationsTable, len(test.invitations))
+			for i, invitation := range invitationsTable {
+				assert.Equal(t, test.invitations[i].MessageID(), invitation.MessageID)
+				assert.Equal(t, test.invitations[i].GitHubID(), invitation.GitHubID)
+				assert.Equal(t, test.invitations[i].TraqID(), invitation.TraqID)
+				assert.WithinDuration(t, time.Now(), invitation.CreatedAt, time.Second)
+			}
 		})
-
-		ir := NewInvitation(testDB)
-
-		invitations := []*model.Invitation{
-			model.NewInvitation(uuid.NewString(), "github_id", "traq_id"),
-		}
-
-		err := ir.CreateInvitation(ctx, invitations)
-		assert.NoError(t, err)
-
-		var invitationsTable []schema.Invitation
-		err = ir.db.NewSelect().Model(&invitationsTable).Scan(ctx)
-		require.NoError(t, err)
-
-		assert.Len(t, invitationsTable, len(invitations))
-		for i, invitation := range invitationsTable {
-			assert.Equal(t, invitations[i].MessageID(), invitation.MessageID)
-			assert.Equal(t, invitations[i].GitHubID(), invitation.GitHubID)
-			assert.Equal(t, invitations[i].TraqID(), invitation.TraqID)
-			assert.WithinDuration(t, time.Now(), invitation.CreatedAt, time.Second)
-		}
-	})
+	}
 }
 
 func TestGetInvitations(t *testing.T) {

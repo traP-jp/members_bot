@@ -66,7 +66,10 @@ func TestMain(m *testing.M) {
 
 	testDB = db
 
-	schema.Migrate(testDB)
+	if err := schema.Migrate(testDB); err != nil {
+		log.Println("failed to migrate schema:", err)
+		os.Exit(1)
+	}
 
 	m.Run()
 }
