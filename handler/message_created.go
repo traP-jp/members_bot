@@ -147,6 +147,22 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 			return
 		}
 
+		inOrg, err := h.githubClient.CheckUserInOrg(ctx, gitHubID)
+		if err != nil {
+			log.Println("failed to check user in org: ", err)
+			return
+		}
+
+		if inOrg {
+			_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID,
+				fmt.Sprintf("GitHubユーザー %s は既に %s に所属しています", gitHubID, h.githubClient.OrgName()))
+			if err != nil {
+				log.Println("failed to post message: ", err)
+			}
+
+			return
+		}
+
 		traQIDs = append(traQIDs, traQID)
 		gitHubIDs = append(gitHubIDs, gitHubID)
 	}

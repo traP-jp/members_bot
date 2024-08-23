@@ -26,6 +26,7 @@ func TestInvite(t *testing.T) {
 		messageID        string
 		embedded         []payload.EmbeddedInfo
 		gitHubUserExist  bool
+		belongToOrg      bool
 		postTextFunc     func(test) string
 		postToBotChannel bool
 		invitations      []*model.Invitation
@@ -122,6 +123,18 @@ https://q.trap.jp/messages/%s`, t.messageID)
 				return "GitHubユーザー no-user は存在しません"
 			},
 		},
+		"すでに所属している": {
+			plainText: "@BOT_traP-jp /invite @ikura-hamu ikura-hamu",
+			messageID: messageID,
+			embedded: []payload.EmbeddedInfo{
+				{Type: "user", Raw: "@BOT_traP-jp", ID: botUserID},
+			},
+			gitHubUserExist: true,
+			belongToOrg:     true,
+			postTextFunc: func(test) string {
+				return fmt.Sprintf("GitHubユーザー ikura-hamu は既に traP-jp に所属しています")
+			},
+		},
 	}
 
 	for name, test := range testCases {
@@ -147,6 +160,12 @@ https://q.trap.jp/messages/%s`, t.messageID)
 			gitHubMock := &mock.GitHubMock{
 				CheckUserExistFunc: func(ctx context.Context, userID string) (bool, error) {
 					return test.gitHubUserExist, nil
+				},
+				CheckUserInOrgFunc: func(ctx context.Context, userID string) (bool, error) {
+					return test.belongToOrg, nil
+				},
+				OrgNameFunc: func() string {
+					return "traP-jp"
 				},
 			}
 

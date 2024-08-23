@@ -97,6 +97,19 @@ func (g *GitHub) CheckUserExist(ctx context.Context, userID string) (bool, error
 	return true, nil
 }
 
+func (g *GitHub) CheckUserInOrg(ctx context.Context, userID string) (bool, error) {
+	_, _, err := g.cl.Organizations.GetOrgMembership(ctx, userID, g.orgName)
+	var gitHubErr *github.ErrorResponse
+	if errors.As(err, &gitHubErr) && gitHubErr.Response.StatusCode == 404 {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("failed to get GitHub org membership: %w", err)
+	}
+
+	return true, nil
+}
+
 func (g *GitHub) OrgName() string {
 	return g.orgName
 }
