@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"fmt"
-	"log"
 	"regexp"
 	"slices"
 	"strings"
@@ -54,7 +53,7 @@ func (h *BotHandler) MessageCreated(p *payload.MessageCreated) {
 				ctx := context.Background()
 				_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, "pong")
 				if err != nil {
-					log.Println("failed to post message: ", err)
+					logger.Println("failed to post message: ", err)
 				}
 			},
 		},
@@ -67,7 +66,7 @@ func (h *BotHandler) MessageCreated(p *payload.MessageCreated) {
 				ctx := context.Background()
 				_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, ":shiran_zubora.ex-large:")
 				if err != nil {
-					log.Println("failed to post message: ", err)
+					logger.Println("failed to post message: ", err)
 				}
 			},
 		},
@@ -103,7 +102,7 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 	if len(splitText) < 2 {
 		_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, inviteCommandMessage("引数が足りません"))
 		if err != nil {
-			log.Println("failed to post message: ", err)
+			logger.Println("failed to post message: ", err)
 		}
 		return
 	}
@@ -113,7 +112,7 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 	if slices.Contains([]string{"-h", "-help", "--help"}, splitText[0]) {
 		_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, inviteCommandMessage("/invite は、GitHubのOrganizationに招待するためのコマンドです。"))
 		if err != nil {
-			log.Println("failed to post message: ", err)
+			logger.Println("failed to post message: ", err)
 		}
 		return
 	}
@@ -121,7 +120,7 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 	if len(splitText)%2 != 0 || len(splitText) == 0 {
 		_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, inviteCommandMessage("引数の数が合いません"))
 		if err != nil {
-			log.Println("failed to post message: ", err)
+			logger.Println("failed to post message: ", err)
 		}
 		return
 	}
@@ -134,14 +133,14 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 
 		exist, err := h.githubClient.CheckUserExist(ctx, gitHubID)
 		if err != nil {
-			log.Println("failed to check user exist: ", err)
+			logger.Println("failed to check user exist: ", err)
 			return
 		}
 		if !exist {
 			_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID,
 				fmt.Sprintf("GitHubユーザー %s は存在しません", gitHubID))
 			if err != nil {
-				log.Println("failed to post message: ", err)
+				logger.Println("failed to post message: ", err)
 			}
 
 			return
@@ -149,7 +148,7 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 
 		inOrg, err := h.githubClient.CheckUserInOrg(ctx, gitHubID)
 		if err != nil {
-			log.Println("failed to check user in org: ", err)
+			logger.Println("failed to check user in org: ", err)
 			return
 		}
 
@@ -157,7 +156,7 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 			_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID,
 				fmt.Sprintf("GitHubユーザー %s は既に %s に所属しています", gitHubID, h.githubClient.OrgName()))
 			if err != nil {
-				log.Println("failed to post message: ", err)
+				logger.Println("failed to post message: ", err)
 			}
 
 			return
@@ -175,7 +174,7 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 
 	messageID, err := h.traqClient.PostMessage(ctx, h.botChannelID, invitationMessage)
 	if err != nil {
-		log.Printf("failed to post message: %v", err)
+		logger.Printf("failed to post message: %v", err)
 	}
 
 	invitations := make([]*model.Invitation, 0, len(splitText)/2)
@@ -185,18 +184,18 @@ func (h *BotHandler) invite(p *payload.MessageCreated) {
 
 	err = h.ir.CreateInvitation(ctx, invitations)
 	if err != nil {
-		log.Println("failed to create invitation: ", err)
+		logger.Println("failed to create invitation: ", err)
 		return
 	}
 
 	err = h.traqClient.AddStamp(ctx, messageID, h.acceptStampID, 1)
 	if err != nil {
-		log.Println("failed to add stamp: ", err)
+		logger.Println("failed to add stamp: ", err)
 		return
 	}
 	err = h.traqClient.AddStamp(ctx, messageID, h.rejectStampID, 1)
 	if err != nil {
-		log.Println("failed to add stamp: ", err)
+		logger.Println("failed to add stamp: ", err)
 		return
 	}
 
@@ -212,14 +211,14 @@ func (h *BotHandler) list(p *payload.MessageCreated) {
 		_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID,
 			listCommandMessage("/list は、招待一覧を表示するためのコマンドです。"))
 		if err != nil {
-			log.Println("failed to post message: ", err)
+			logger.Println("failed to post message: ", err)
 		}
 		return
 	}
 
 	invitations, err := h.ir.GetAllInvitations(ctx)
 	if err != nil {
-		log.Println("failed to get invitations: ", err)
+		logger.Println("failed to get invitations: ", err)
 		return
 	}
 
@@ -230,7 +229,7 @@ func (h *BotHandler) list(p *payload.MessageCreated) {
 
 	_, err = h.traqClient.PostMessage(ctx, p.Message.ChannelID, message)
 	if err != nil {
-		log.Println("failed to post message: ", err)
+		logger.Println("failed to post message: ", err)
 	}
 }
 
@@ -241,7 +240,7 @@ func (h *BotHandler) help(p *payload.MessageCreated) {
 
 	_, err := h.traqClient.PostMessage(ctx, p.Message.ChannelID, helpDoc)
 	if err != nil {
-		log.Println("failed to post message: ", err)
+		logger.Println("failed to post message: ", err)
 	}
 }
 

@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/traP-jp/members_bot/model"
 	"github.com/traP-jp/members_bot/service"
@@ -71,4 +72,23 @@ func (t *Traq) UpdateUserBio(ctx context.Context, bio string) error {
 	}
 
 	return nil
+}
+
+func (t *Traq) NewWriter(channelID string) io.Writer {
+	return &TraqWriter{channelID: channelID, t: t}
+}
+
+var _ io.Writer = (*TraqWriter)(nil)
+
+type TraqWriter struct {
+	channelID string
+	t         *Traq
+}
+
+func (tw *TraqWriter) Write(p []byte) (n int, err error) {
+	_, err = tw.t.PostMessage(context.Background(), tw.channelID, string(p))
+	if err != nil {
+		return 0, err
+	}
+	return len(p), nil
 }
