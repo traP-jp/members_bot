@@ -22,7 +22,7 @@ type BotHandler struct {
 	*Config
 }
 
-var logger = log.Default()
+var logger = log.New(nil, "", log.LstdFlags)
 
 func NewBotHandler(traqClient service.Traq, gitHubClient service.GitHub, ir repository.Invitation) (*BotHandler, error) {
 	ctx := context.Background()
