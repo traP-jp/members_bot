@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"slices"
 
 	"github.com/traP-jp/members_bot/repository"
@@ -25,7 +24,7 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 
 	adminIDs, err := h.traqClient.GetGroupMemberIDs(ctx, h.adminGroupID)
 	if err != nil {
-		log.Printf("failed to get group member IDs: %v", err)
+		logger.Printf("failed to get group member IDs: %v", err)
 		return
 	}
 
@@ -34,7 +33,7 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 		return
 	}
 	if err != nil {
-		log.Printf("failed to get invitations: %v", err)
+		logger.Printf("failed to get invitations: %v", err)
 		return
 	}
 
@@ -69,21 +68,21 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 
 	err = h.traqClient.AddStamp(ctx, p.MessageID, h.inactiveStampID, 1)
 	if err != nil {
-		log.Printf("failed to add stamp: %v", err)
+		logger.Printf("failed to add stamp: %v", err)
 		return
 	}
 
 	if reject {
 		err := h.ir.DeleteInvitations(ctx, p.MessageID)
 		if err != nil {
-			log.Printf("failed to delete invitations: %v", err)
+			logger.Printf("failed to delete invitations: %v", err)
 		}
 		return
 	}
 
 	err = h.githubClient.SendInvitations(ctx, invitations)
 	if err != nil {
-		log.Printf("failed to send invitations: %v", err)
+		logger.Printf("failed to send invitations: %v", err)
 		return
 	}
 
@@ -94,11 +93,11 @@ func (h *BotHandler) AcceptOrReject(p *payload.BotMessageStampsUpdated) {
 
 	_, err = h.traqClient.PostMessage(ctx, h.botChannelID, message)
 	if err != nil {
-		log.Printf("failed to post message: %v", err)
+		logger.Printf("failed to post message: %v", err)
 	}
 
 	err = h.ir.DeleteInvitations(ctx, p.MessageID)
 	if err != nil {
-		log.Printf("failed to delete invitations: %v", err)
+		logger.Printf("failed to delete invitations: %v", err)
 	}
 }

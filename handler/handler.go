@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"text/template"
@@ -21,6 +22,8 @@ type BotHandler struct {
 	*Config
 }
 
+var logger = log.Default()
+
 func NewBotHandler(traqClient service.Traq, gitHubClient service.GitHub, ir repository.Invitation) (*BotHandler, error) {
 	ctx := context.Background()
 	botUserID, err := traqClient.GetBotUser(ctx)
@@ -32,6 +35,8 @@ func NewBotHandler(traqClient service.Traq, gitHubClient service.GitHub, ir repo
 	if err != nil {
 		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
+
+	logger.SetOutput(traqClient.NewWriter(conf.botChannelID))
 
 	h := &BotHandler{
 		traqClient:   traqClient,

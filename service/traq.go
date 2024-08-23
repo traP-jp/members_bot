@@ -4,6 +4,7 @@ package service
 
 import (
 	"context"
+	"io"
 
 	"github.com/traP-jp/members_bot/model"
 )
@@ -14,4 +15,6 @@ type Traq interface {
 	AddStamp(ctx context.Context, messageID, stampID string, count int) error
 	GetGroupMemberIDs(ctx context.Context, groupID string) ([]string, error)
 	UpdateUserBio(ctx context.Context, bio string) error
+
+	NewWriter(channelID string) io.Writer
 }
