@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Update Go modules
+  - package-ecosystem: "go"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+  # Update GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
