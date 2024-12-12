@@ -5,8 +5,12 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    reviewers:
+      - "traP-jp/admin"
   # Update GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
+    reviewers:
+      - "traP-jp/admin"
