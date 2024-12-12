@@ -1,7 +1,7 @@
 version: 2
 updates:
   # Update Go modules
-  - package-ecosystem: "go"
+  - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "monthly"
