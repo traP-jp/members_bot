@@ -18,7 +18,7 @@ require (
 require (
 	github.com/containerd/platforms v0.2.1 // indirect
 	github.com/gofrs/uuid/v5 v5.3.0 // indirect
-	github.com/google/go-github/v66 v66.0.0 // indirect
+	github.com/google/go-github/v68 v68.0.0 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.5.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
@@ -30,7 +30,7 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/bradleyfalzon/ghinstallation/v2 v2.12.0
+	github.com/bradleyfalzon/ghinstallation/v2 v2.13.0
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/containerd/containerd v1.7.18 // indirect
 	github.com/containerd/log v0.1.0 // indirect
