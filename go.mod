@@ -11,19 +11,15 @@ require (
 	github.com/testcontainers/testcontainers-go v0.35.0
 	github.com/traPtitech/go-traq v0.0.0-20240725071454-97c7b85dc879
 	github.com/traPtitech/traq-ws-bot v1.2.1
-	github.com/uptrace/bun v1.2.6
-	github.com/uptrace/bun/dialect/mysqldialect v1.2.6
+	github.com/uptrace/bun v1.2.9
+	github.com/uptrace/bun/dialect/mysqldialect v1.2.9
 )
 
 require (
-	github.com/bahlo/generic-list-go v0.2.0 // indirect
-	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/containerd/platforms v0.2.1 // indirect
 	github.com/gofrs/uuid/v5 v5.3.0 // indirect
 	github.com/google/go-github/v66 v66.0.0 // indirect
-	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
-	github.com/wk8/go-ordered-map/v2 v2.1.9-0.20240816141633-0a40785b4f41 // indirect
+	github.com/puzpuzpuz/xsync/v3 v3.5.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240318140521-94a12d6c2237 // indirect
@@ -84,7 +80,7 @@ require (
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/oauth2 v0.22.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
