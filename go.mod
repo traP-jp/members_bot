@@ -3,7 +3,7 @@ module github.com/traP-jp/members_bot
 go 1.23.0
 
 require (
-	github.com/go-sql-driver/mysql v1.8.1
+	github.com/go-sql-driver/mysql v1.9.0
 	github.com/google/go-github/v63 v63.0.0
 	github.com/google/uuid v1.6.0
 	github.com/matryer/moq v0.5.1
