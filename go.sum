@@ -141,10 +141,10 @@ github.com/traPtitech/go-traq v0.0.0-20240725071454-97c7b85dc879 h1:kkMhrXZXa7aP
 github.com/traPtitech/go-traq v0.0.0-20240725071454-97c7b85dc879/go.mod h1:7yJs1m/ddCG39XF78GA8FrXqyc4fNPfHp8BSLjMVMY8=
 github.com/traPtitech/traq-ws-bot v1.2.1 h1:DYXrVsInXAqWExltqRCvg3o0KYa2EZkaRc2Q7Gr+lzM=
 github.com/traPtitech/traq-ws-bot v1.2.1/go.mod h1:9M6DRpFVfiuGR6sJwOQ0ZbgF9WQJvoBWCsPLekiZdtM=
-github.com/uptrace/bun v1.2.10 h1:6TlxUQhGxiiv7MHjzxbV6ZNt/Im0PIQ3S45riAmbnGA=
-github.com/uptrace/bun v1.2.10/go.mod h1:ww5G8h59UrOnCHmZ8O1I/4Djc7M/Z3E+EWFS2KLB6dQ=
-github.com/uptrace/bun/dialect/mysqldialect v1.2.10 h1:5H6r7nQu9Cs55j8Os391Co6TXt+DGFyS7tj8yVLl6XY=
-github.com/uptrace/bun/dialect/mysqldialect v1.2.10/go.mod h1:bTFIm0aeLP5IoxjdU/ZpMeQZhOMgMsRNW3BG+dLq0AY=
+github.com/uptrace/bun v1.2.11 h1:l9dTymsdZZAoSZ1+Qo3utms0RffgkDbIv+1UGk8N1wQ=
+github.com/uptrace/bun v1.2.11/go.mod h1:ww5G8h59UrOnCHmZ8O1I/4Djc7M/Z3E+EWFS2KLB6dQ=
+github.com/uptrace/bun/dialect/mysqldialect v1.2.11 h1:4WLBf2ajPv62PaiPj7nbWF0J+kcHK6+Ro1Fg152iIKA=
+github.com/uptrace/bun/dialect/mysqldialect v1.2.11/go.mod h1:KNAV8KsVAxzOJnAF4p8C47Ig+Ma11Is0iz8+cb9QUIQ=
 github.com/vmihailenco/msgpack/v5 v5.4.1 h1:cQriyiUvjTwOHg8QZaPihLWeRAAVoCpE00IUPn0Bjt8=
 github.com/vmihailenco/msgpack/v5 v5.4.1/go.mod h1:GaZTsDaehaPpQVyxrf5mtQlH+pc21PIudVV/E3rRQok=
 github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=

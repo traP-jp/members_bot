@@ -1,7 +1,6 @@
 module github.com/traP-jp/members_bot
 
 go 1.23.0
-
 require (
 	github.com/go-sql-driver/mysql v1.9.0
 	github.com/google/go-github/v63 v63.0.0
@@ -11,8 +10,8 @@ require (
 	github.com/testcontainers/testcontainers-go v0.35.0
 	github.com/traPtitech/go-traq v0.0.0-20240725071454-97c7b85dc879
 	github.com/traPtitech/traq-ws-bot v1.2.1
-	github.com/uptrace/bun v1.2.10
-	github.com/uptrace/bun/dialect/mysqldialect v1.2.10
+	github.com/uptrace/bun v1.2.11
+	github.com/uptrace/bun/dialect/mysqldialect v1.2.11
 )
 
 require (
