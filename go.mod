@@ -11,8 +11,8 @@ require (
 	github.com/testcontainers/testcontainers-go v0.35.0
 	github.com/traPtitech/go-traq v0.0.0-20240725071454-97c7b85dc879
 	github.com/traPtitech/traq-ws-bot v1.2.1
-	github.com/uptrace/bun v1.2.10
-	github.com/uptrace/bun/dialect/mysqldialect v1.2.10
+	github.com/uptrace/bun v1.2.14
+	github.com/uptrace/bun/dialect/mysqldialect v1.2.14
 )
 
 require (
@@ -77,9 +77,9 @@ require (
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/oauth2 v0.22.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/tools v0.24.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
