@@ -1,12 +1,12 @@
 module github.com/traP-jp/members_bot
 
-go 1.24
+go 1.25
 
 require (
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/google/go-github/v63 v63.0.0
 	github.com/google/uuid v1.6.0
-	github.com/matryer/moq v0.5.3
+	github.com/matryer/moq v0.6.0
 	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.38.0
 	github.com/traPtitech/go-traq v0.0.0-20240725071454-97c7b85dc879
